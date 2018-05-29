@@ -98,6 +98,15 @@ public class Login_S {
 					EMR.main(null);
 				}
 				
+				else if (password.contains("password") && username.contains("Felicia")) {
+					
+					txtPassword.setText(null);
+					txtUsername.setText(null);
+					
+					EMR_Admin info = new EMR_Admin();
+					EMR_Admin.main(null);
+				}
+				
 				else
 				{
 					attempts--; 
@@ -107,7 +116,7 @@ public class Login_S {
 				}
 				return;
 			}
-				if (attempts==0)
+				if (attempts==3)
 				{
 					JOptionPane.showMessageDialog(frame, "Too Many Failed Attempts");
 					System.exit(0);
