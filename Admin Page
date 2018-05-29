@@ -1,0 +1,618 @@
+package UI;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Font;
+
+public class Admin {
+
+	private JFrame frmAdminPage;
+	private JTextField textRFName;
+	private JTextField textRLName;
+	private JTextField textEID;
+	private JTextField textRCName;
+	private JTextField textRAddress;
+	private JTextField textRSSN;
+	private JTextField textRDOB;
+	private JTextField textREmail;
+	private JTextField textRUsername;
+	private JTextField textRPassword;
+	private JTextField textPFName;
+	private JTextField textPLName;
+	private JTextField textNPI;
+	private JTextField textPCName;
+	private JTextField textPAddress;
+	private JTextField textPSSN;
+	private JTextField textPDOB;
+	private JTextField textPEmail;
+	private JTextField textPUsername;
+	private JTextField textPPassword;
+	private JTextField textNFName;
+	private JTextField textNLName;
+	private JTextField textLicenseNum;
+	private JTextField textNCName;
+	private JTextField textNAddress;
+	private JTextField textNSSN;
+	private JTextField textNDOB;
+	private JTextField textNEmail;
+	private JTextField textNUsername;
+	private JTextField textNPassword;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Admin window = new Admin();
+					window.frmAdminPage.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Admin() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frmAdminPage = new JFrame();
+		frmAdminPage.setTitle("Admin Page");
+		frmAdminPage.setBounds(100, 100, 718, 655);
+		frmAdminPage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		frmAdminPage.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+		
+		JPanel panel = new JPanel();
+		tabbedPane.addTab("Registration Clerk", null, panel, null);
+		panel.setLayout(null);
+		
+		JLabel label = new JLabel("First Name:");
+		label.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label.setBounds(95, 34, 76, 16);
+		panel.add(label);
+		
+		JLabel label_1 = new JLabel("Last Name:");
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_1.setBounds(95, 63, 76, 16);
+		panel.add(label_1);
+		
+		JLabel label_2 = new JLabel("Employee ID:");
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_2.setBounds(82, 92, 89, 16);
+		panel.add(label_2);
+		
+		JLabel label_3 = new JLabel("Clinic Name:");
+		label_3.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_3.setBounds(92, 121, 79, 16);
+		panel.add(label_3);
+		
+		JLabel label_4 = new JLabel("Address:");
+		label_4.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_4.setBounds(114, 150, 57, 16);
+		panel.add(label_4);
+		
+		JLabel label_5 = new JLabel("SSN:");
+		label_5.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_5.setBounds(140, 179, 31, 16);
+		panel.add(label_5);
+		
+		JLabel label_6 = new JLabel("DOB:");
+		label_6.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_6.setBounds(136, 208, 35, 16);
+		panel.add(label_6);
+		
+		JLabel label_7 = new JLabel("Email:");
+		label_7.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_7.setBounds(133, 237, 38, 16);
+		panel.add(label_7);
+		
+		textRFName = new JTextField();
+		textRFName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRFName.setColumns(10);
+		textRFName.setBounds(183, 31, 251, 22);
+		panel.add(textRFName);
+		
+		textRLName = new JTextField();
+		textRLName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRLName.setColumns(10);
+		textRLName.setBounds(183, 60, 251, 22);
+		panel.add(textRLName);
+		
+		textEID = new JTextField();
+		textEID.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textEID.setColumns(10);
+		textEID.setBounds(183, 89, 251, 22);
+		panel.add(textEID);
+		
+		textRCName = new JTextField();
+		textRCName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRCName.setColumns(10);
+		textRCName.setBounds(183, 118, 500, 22);
+		panel.add(textRCName);
+		
+		textRAddress = new JTextField();
+		textRAddress.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRAddress.setColumns(10);
+		textRAddress.setBounds(183, 147, 500, 22);
+		panel.add(textRAddress);
+		
+		textRSSN = new JTextField();
+		textRSSN.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRSSN.setColumns(10);
+		textRSSN.setBounds(183, 176, 251, 22);
+		panel.add(textRSSN);
+		
+		textRDOB = new JTextField();
+		textRDOB.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRDOB.setColumns(10);
+		textRDOB.setBounds(183, 205, 136, 22);
+		panel.add(textRDOB);
+		
+		textREmail = new JTextField();
+		textREmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textREmail.setColumns(10);
+		textREmail.setBounds(183, 234, 500, 22);
+		panel.add(textREmail);
+		
+		JButton button = new JButton("Create New User");
+		button.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button.setBounds(26, 425, 169, 25);
+		panel.add(button);
+		
+		JButton button_1 = new JButton("Update User");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button_1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_1.setBounds(26, 473, 169, 25);
+		panel.add(button_1);
+		
+		JButton button_2 = new JButton("Lock User");
+		button_2.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_2.setBounds(265, 425, 169, 25);
+		panel.add(button_2);
+		
+		JButton button_3 = new JButton("Unlock User");
+		button_3.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_3.setBounds(265, 473, 169, 25);
+		panel.add(button_3);
+		
+		JButton button_4 = new JButton("Delete User");
+		button_4.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_4.setBounds(500, 473, 169, 25);
+		panel.add(button_4);
+		
+		JButton button_5 = new JButton("Clear");
+		button_5.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textRFName.setText("");
+				textRLName.setText("");
+				textEID.setText("");
+				textRCName.setText("");
+				textRAddress.setText("");
+				textRSSN.setText("");
+				textRDOB.setText("");
+				textREmail.setText("");
+				textRUsername.setText("");
+				textRPassword.setText("");
+			}
+		});
+		button_5.setBounds(500, 425, 169, 25);
+		panel.add(button_5);
+		
+		JLabel label_8 = new JLabel("Username:");
+		label_8.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_8.setBounds(99, 266, 72, 16);
+		panel.add(label_8);
+		
+		JLabel label_9 = new JLabel("Password:");
+		label_9.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_9.setBounds(105, 295, 66, 16);
+		panel.add(label_9);
+		
+		textRUsername = new JTextField();
+		textRUsername.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRUsername.setColumns(10);
+		textRUsername.setBounds(183, 263, 251, 22);
+		panel.add(textRUsername);
+		
+		textRPassword = new JTextField();
+		textRPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textRPassword.setColumns(10);
+		textRPassword.setBounds(183, 292, 251, 22);
+		panel.add(textRPassword);
+		
+		JButton btnCloselogout = new JButton("Exit");
+		btnCloselogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				frmAdminPage = new JFrame ("Exit");
+				if (JOptionPane.showConfirmDialog(frmAdminPage, "Confirm if you want to exit", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION)
+				{
+					System.exit(0);
+				}
+			}
+		});
+		btnCloselogout.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnCloselogout.setBounds(265, 521, 169, 25);
+		panel.add(btnCloselogout);
+		
+		JPanel panel_1 = new JPanel();
+		tabbedPane.addTab("Physician", null, panel_1, null);
+		panel_1.setLayout(null);
+		
+		JLabel label_10 = new JLabel("First Name:");
+		label_10.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_10.setBounds(122, 55, 76, 16);
+		panel_1.add(label_10);
+		
+		JLabel label_11 = new JLabel("Last Name:");
+		label_11.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_11.setBounds(122, 84, 76, 16);
+		panel_1.add(label_11);
+		
+		JLabel label_12 = new JLabel("National Provider Identifier:");
+		label_12.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_12.setBounds(23, 113, 175, 16);
+		panel_1.add(label_12);
+		
+		JLabel label_13 = new JLabel("Clinic Name:");
+		label_13.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_13.setBounds(119, 142, 79, 16);
+		panel_1.add(label_13);
+		
+		JLabel label_14 = new JLabel("Address:");
+		label_14.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_14.setBounds(141, 171, 57, 16);
+		panel_1.add(label_14);
+		
+		JLabel label_15 = new JLabel("SSN:");
+		label_15.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_15.setBounds(167, 200, 31, 16);
+		panel_1.add(label_15);
+		
+		JLabel label_16 = new JLabel("DOB:");
+		label_16.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_16.setBounds(163, 229, 35, 16);
+		panel_1.add(label_16);
+		
+		JLabel label_17 = new JLabel("Email:");
+		label_17.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_17.setBounds(160, 258, 38, 16);
+		panel_1.add(label_17);
+		
+		textPFName = new JTextField();
+		textPFName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPFName.setColumns(10);
+		textPFName.setBounds(210, 52, 213, 22);
+		panel_1.add(textPFName);
+		
+		textPLName = new JTextField();
+		textPLName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPLName.setColumns(10);
+		textPLName.setBounds(210, 81, 213, 22);
+		panel_1.add(textPLName);
+		
+		textNPI = new JTextField();
+		textNPI.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNPI.setColumns(10);
+		textNPI.setBounds(210, 110, 213, 22);
+		panel_1.add(textNPI);
+		
+		textPCName = new JTextField();
+		textPCName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPCName.setColumns(10);
+		textPCName.setBounds(210, 139, 423, 22);
+		panel_1.add(textPCName);
+		
+		textPAddress = new JTextField();
+		textPAddress.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPAddress.setColumns(10);
+		textPAddress.setBounds(210, 168, 423, 22);
+		panel_1.add(textPAddress);
+		
+		textPSSN = new JTextField();
+		textPSSN.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPSSN.setColumns(10);
+		textPSSN.setBounds(210, 197, 213, 22);
+		panel_1.add(textPSSN);
+		
+		textPDOB = new JTextField();
+		textPDOB.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPDOB.setColumns(10);
+		textPDOB.setBounds(210, 226, 97, 22);
+		panel_1.add(textPDOB);
+		
+		textPEmail = new JTextField();
+		textPEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPEmail.setColumns(10);
+		textPEmail.setBounds(210, 255, 423, 22);
+		panel_1.add(textPEmail);
+		
+		JButton button_6 = new JButton("Create New User");
+		button_6.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_6.setBounds(23, 437, 175, 25);
+		panel_1.add(button_6);
+		
+		JButton button_7 = new JButton("Update User");
+		button_7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button_7.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_7.setBounds(23, 488, 175, 25);
+		panel_1.add(button_7);
+		
+		JButton button_8 = new JButton("Lock User");
+		button_8.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_8.setBounds(263, 488, 175, 25);
+		panel_1.add(button_8);
+		
+		JButton button_9 = new JButton("Unlock User");
+		button_9.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_9.setBounds(263, 437, 175, 25);
+		panel_1.add(button_9);
+		
+		JButton button_10 = new JButton("Delete User");
+		button_10.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_10.setBounds(492, 488, 175, 25);
+		panel_1.add(button_10);
+		
+		JButton button_11 = new JButton("Clear");
+		button_11.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPFName.setText("");
+				textPLName.setText("");
+				textNPI.setText("");
+				textPCName.setText("");
+				textPAddress.setText("");
+				textPSSN.setText("");
+				textPDOB.setText("");
+				textPEmail.setText("");
+				textPUsername.setText("");
+				textPPassword.setText("");
+			}
+		});
+		button_11.setBounds(492, 437, 175, 25);
+		panel_1.add(button_11);
+		
+		JLabel label_18 = new JLabel("Username:");
+		label_18.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_18.setBounds(126, 287, 72, 16);
+		panel_1.add(label_18);
+		
+		JLabel label_19 = new JLabel("Password:");
+		label_19.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_19.setBounds(132, 316, 66, 16);
+		panel_1.add(label_19);
+		
+		textPUsername = new JTextField();
+		textPUsername.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPUsername.setColumns(10);
+		textPUsername.setBounds(210, 284, 251, 22);
+		panel_1.add(textPUsername);
+		
+		textPPassword = new JTextField();
+		textPPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textPPassword.setColumns(10);
+		textPPassword.setBounds(210, 313, 251, 22);
+		panel_1.add(textPPassword);
+		
+		JButton btnNewButton = new JButton("Exit");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				frmAdminPage = new JFrame ("Exit");
+				if (JOptionPane.showConfirmDialog(frmAdminPage, "Confirm if you want to exit", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION)
+				{
+					System.exit(0);
+				}
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnNewButton.setBounds(263, 540, 175, 25);
+		panel_1.add(btnNewButton);
+		
+		JPanel panel_2 = new JPanel();
+		tabbedPane.addTab("Nurse", null, panel_2, null);
+		panel_2.setLayout(null);
+		
+		JLabel label_20 = new JLabel("First Name:");
+		label_20.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_20.setBounds(45, 72, 76, 16);
+		panel_2.add(label_20);
+		
+		JLabel label_21 = new JLabel("Last Name:");
+		label_21.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_21.setBounds(45, 101, 76, 16);
+		panel_2.add(label_21);
+		
+		JLabel label_22 = new JLabel("License Number:");
+		label_22.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_22.setBounds(12, 130, 109, 16);
+		panel_2.add(label_22);
+		
+		JLabel label_23 = new JLabel("Clinic Name:");
+		label_23.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_23.setBounds(42, 159, 79, 16);
+		panel_2.add(label_23);
+		
+		JLabel label_24 = new JLabel("Address:");
+		label_24.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_24.setBounds(61, 185, 60, 16);
+		panel_2.add(label_24);
+		
+		JLabel label_25 = new JLabel("SSN:");
+		label_25.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_25.setBounds(85, 214, 36, 16);
+		panel_2.add(label_25);
+		
+		JLabel label_26 = new JLabel("DOB:");
+		label_26.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_26.setBounds(85, 243, 36, 16);
+		panel_2.add(label_26);
+		
+		JLabel label_27 = new JLabel("Email:");
+		label_27.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_27.setBounds(83, 272, 38, 16);
+		panel_2.add(label_27);
+		
+		textNFName = new JTextField();
+		textNFName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNFName.setColumns(10);
+		textNFName.setBounds(133, 69, 251, 22);
+		panel_2.add(textNFName);
+		
+		textNLName = new JTextField();
+		textNLName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNLName.setColumns(10);
+		textNLName.setBounds(133, 98, 251, 22);
+		panel_2.add(textNLName);
+		
+		textLicenseNum = new JTextField();
+		textLicenseNum.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textLicenseNum.setColumns(10);
+		textLicenseNum.setBounds(133, 127, 251, 22);
+		panel_2.add(textLicenseNum);
+		
+		textNCName = new JTextField();
+		textNCName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNCName.setColumns(10);
+		textNCName.setBounds(133, 156, 479, 22);
+		panel_2.add(textNCName);
+		
+		textNAddress = new JTextField();
+		textNAddress.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNAddress.setColumns(10);
+		textNAddress.setBounds(133, 182, 479, 22);
+		panel_2.add(textNAddress);
+		
+		textNSSN = new JTextField();
+		textNSSN.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNSSN.setColumns(10);
+		textNSSN.setBounds(133, 211, 251, 22);
+		panel_2.add(textNSSN);
+		
+		textNDOB = new JTextField();
+		textNDOB.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNDOB.setColumns(10);
+		textNDOB.setBounds(133, 240, 136, 22);
+		panel_2.add(textNDOB);
+		
+		textNEmail = new JTextField();
+		textNEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNEmail.setColumns(10);
+		textNEmail.setBounds(133, 269, 479, 22);
+		panel_2.add(textNEmail);
+		
+		JButton button_12 = new JButton("Create New User");
+		button_12.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_12.setBounds(22, 421, 182, 25);
+		panel_2.add(button_12);
+		
+		JButton button_13 = new JButton("Update User");
+		button_13.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_13.setBounds(22, 476, 182, 25);
+		panel_2.add(button_13);
+		
+		JButton button_14 = new JButton("Lock User");
+		button_14.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_14.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button_14.setBounds(254, 421, 182, 25);
+		panel_2.add(button_14);
+		
+		JButton button_15 = new JButton("Unlock User");
+		button_15.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_15.setBounds(254, 476, 182, 25);
+		panel_2.add(button_15);
+		
+		JButton button_16 = new JButton("Delete User");
+		button_16.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_16.setBounds(491, 476, 182, 25);
+		panel_2.add(button_16);
+		
+		JButton button_17 = new JButton("Clear");
+		button_17.setFont(new Font("Tahoma", Font.BOLD, 15));
+		button_17.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textNFName.setText("");
+				textNLName.setText("");
+				textLicenseNum.setText("");
+				textNCName.setText("");
+				textNAddress.setText("");
+				textNSSN.setText("");
+				textNDOB.setText("");
+				textNEmail.setText("");
+				textNUsername.setText("");
+				textNPassword.setText("");
+			}
+		});
+		button_17.setBounds(491, 421, 182, 25);
+		panel_2.add(button_17);
+		
+		JLabel label_28 = new JLabel("Username:");
+		label_28.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_28.setBounds(48, 301, 73, 16);
+		panel_2.add(label_28);
+		
+		JLabel label_29 = new JLabel("Password:");
+		label_29.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_29.setBounds(55, 330, 66, 16);
+		panel_2.add(label_29);
+		
+		textNUsername = new JTextField();
+		textNUsername.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNUsername.setColumns(10);
+		textNUsername.setBounds(133, 298, 251, 22);
+		panel_2.add(textNUsername);
+		
+		textNPassword = new JTextField();
+		textNPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		textNPassword.setColumns(10);
+		textNPassword.setBounds(133, 327, 251, 22);
+		panel_2.add(textNPassword);
+		
+		JButton btnCloselogout_1 = new JButton("Exit");
+		btnCloselogout_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				frmAdminPage = new JFrame ("Exit");
+				if (JOptionPane.showConfirmDialog(frmAdminPage, "Confirm if you want to exit", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION)
+				{
+					System.exit(0);
+				}
+			}
+		});
+		btnCloselogout_1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnCloselogout_1.setBounds(254, 526, 182, 25);
+		panel_2.add(btnCloselogout_1);
+	}
+
+}
