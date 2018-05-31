@@ -89,7 +89,7 @@ public class Login_S {
 				
 				while (attempts!=0)
 				{
-				if (password.contains("one") && username.contains("EMR")) {
+				if (password.contains("password") && username.contains("Ryan")) {
 					
 					txtPassword.setText(null);
 					txtUsername.setText(null);
@@ -105,6 +105,24 @@ public class Login_S {
 					
 					EMR_Admin info = new EMR_Admin();
 					EMR_Admin.main(null);
+				}
+				
+				else if (password.contains("password") && username.contains("Triumfia")) {
+					
+					txtPassword.setText(null);
+					txtUsername.setText(null);
+					
+					Physician_UI info = new Physician_UI();
+					Physician_UI.main(null);
+				}
+				
+				else if (password.contains("password") && username.contains("Josh")) {
+					
+					txtPassword.setText(null);
+					txtUsername.setText(null);
+					
+					Registration info = new Registration();
+					Registration.main(null);
 				}
 				
 				else
