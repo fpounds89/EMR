@@ -4,16 +4,28 @@ import java.awt.BorderLayout;
 
 import java.awt.EventQueue;
 
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelListener;
+
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Desktop;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.util.Vector;
+import java.awt.GridLayout;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -33,39 +45,43 @@ import javax.swing.JEditorPane;
 import javax.swing.JCheckBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+
+import net.proteanit.sql.DbUtils;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.SystemColor;
-import base.DBBase;
-import base.DBConnect;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class EMR_Nurse extends JFrame {
 	
 	JFrame frmNurse;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
-	private JTextField textField_7;
-	private JTextField textField_8;
-	private JTextField textField_9;
-	private JTextField textField_10;
-	private JTextField textField_11;
-	private JTextField textField_12;
-	private JTextField textField_13;
-	private JTextField textField_14;
-	private JTextField textField_15;
-	private JTextField textField_16;
-	private JTextField textField_17;
+	private JTextField firstname;
+	private JTextField textSubstance;
+	private JTextField textCategory;
+	private JTextField textReactions;
+	private JTextField textRStatus;
+	private JTextField textUpdated;
+	private JTextField textReviewed;
+	private JTextField textOnset;
+	private JTextField textComment;
+	private JTextField textPulse;
+	private JTextField textRythm;
+	private JTextField textBP1;
+	private JTextField textBP2;
+	private JTextField textRespiratory;
+	private JTextField textTemp;
+	private JTextField textTempLocation;
+	private JTextField textHeight;
+	private JTextField textWeight;
+	private JTable table;
 
-	private DBConnect con;
-	private DBBase data;
 	
 	/**
 	 * Launch the application.
@@ -100,19 +116,39 @@ public class EMR_Nurse extends JFrame {
 		
 		JLabel lblElectronicMedicalRecord = new JLabel("ELECTRONIC MEDICAL RECORD");
 		lblElectronicMedicalRecord.setFont(new Font("Times New Roman", Font.BOLD, 35));
+		
+		JLabel lblLastName = new JLabel("");
+		lblLastName.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JLabel lblFirstName = new JLabel("");
+		lblFirstName.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JLabel label_1 = new JLabel(",");
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblElectronicMedicalRecord)
-						.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 1018, Short.MAX_VALUE))
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 1015, Short.MAX_VALUE)
 					.addContainerGap())
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(lblElectronicMedicalRecord)
+					.addGap(218)
+					.addComponent(lblLastName)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(label_1)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblFirstName)
+					.addContainerGap(142, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(lblElectronicMedicalRecord)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblElectronicMedicalRecord)
+						.addComponent(label_1)
+						.addComponent(lblLastName)
+						.addComponent(lblFirstName))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 671, Short.MAX_VALUE)
 					.addGap(3))
@@ -131,13 +167,18 @@ public class EMR_Nurse extends JFrame {
 		btnSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+			DefaultTableModel model = (DefaultTableModel) table.getModel();
+			int selectedRowIndex = table.getSelectedRow();
+			
+			lblLastName.setText(model.getValueAt(selectedRowIndex,1).toString());
+			lblFirstName.setText(model.getValueAt(selectedRowIndex, 0).toString());
 			}
 		});
 		btnSelect.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField.setColumns(10);
+		firstname = new JTextField();
+		firstname.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		firstname.setColumns(10);
 		
 		JButton btnExit = new JButton("Exit");
 		btnExit.addActionListener(new ActionListener() {
@@ -151,56 +192,105 @@ public class EMR_Nurse extends JFrame {
 		});
 		btnExit.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		JButton btnSearch = new JButton("Search");
+		JButton btnSearch = new JButton("Load Patients");
 		btnSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					Statement stmt = con.createStatement();
+					String sql = "Select First_Name, Last_Name from names";
+					ResultSet rs = stmt.executeQuery(sql);
+					table.setModel (DbUtils.resultSetToTableModel(rs));
+					
+				} 
+				catch(Exception e) {System.out.print(e);}
 			}
 		});
 		btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JScrollPane scrollPane = new JScrollPane();
+		
+		JButton btnSearch_1 = new JButton("Search");
+		btnSearch_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					String sql = "Select First_Name, Last_Name from names WHERE First_Name ='" +firstname.getText()+ "'";
+					Statement stmt = con.createStatement();
+					ResultSet rs = stmt.executeQuery(sql);
+					table.setModel (DbUtils.resultSetToTableModel(rs));
+					
+				} 
+				catch(Exception e) {System.out.print(e);}
+			}
+		});
+		btnSearch_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton btnClear = new JButton("Clear");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				firstname.setText(null);
+			}
+		});
+		btnClear.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addGap(69)
 					.addComponent(btnSelect, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 675, Short.MAX_VALUE)
+					.addGap(268)
+					.addComponent(btnClear, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 304, Short.MAX_VALUE)
 					.addComponent(btnExit, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
 					.addGap(69))
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(311)
+					.addGap(319)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblSearchPatient, GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
-						.addComponent(lblSelectPatient, GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
 						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(textField, 339, 339, 339)
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblSearchPatient, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+								.addComponent(firstname, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+								.addGroup(gl_panel.createSequentialGroup()
+									.addComponent(lblSelectPatient, GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 189, GroupLayout.PREFERRED_SIZE)))
 							.addGap(18)
-							.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-							.addGap(233))
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 339, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
+							.addComponent(btnSearch_1, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+							.addGap(234))))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(85)
-					.addComponent(lblSearchPatient)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(57)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(btnSearch_1, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(lblSearchPatient)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(firstname, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addGap(70)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblSelectPatient)
 						.addComponent(btnSearch))
-					.addGap(36)
-					.addComponent(lblSelectPatient)
 					.addGap(18)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 247, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 302, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnSelect, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnExit))
+						.addComponent(btnExit)
+						.addComponent(btnClear, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 					.addGap(51))
 		);
+		
+		table = new JTable();
+		table.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		scrollPane.setViewportView(table);
 		panel.setLayout(gl_panel);
 		
 		JPanel panel_1 = new JPanel();
@@ -242,55 +332,105 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblComment = new JLabel("Comment:");
 		lblComment.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_1 = new JTextField();
-		textField_1.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_1.setColumns(10);
+		textSubstance = new JTextField();
+		textSubstance.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textSubstance.setColumns(10);
 		
-		textField_2 = new JTextField();
-		textField_2.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_2.setColumns(10);
+		textCategory = new JTextField();
+		textCategory.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textCategory.setColumns(10);
 		
-		textField_3 = new JTextField();
-		textField_3.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_3.setColumns(10);
+		textReactions = new JTextField();
+		textReactions.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textReactions.setColumns(10);
 		
-		textField_4 = new JTextField();
-		textField_4.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_4.setColumns(10);
+		textRStatus = new JTextField();
+		textRStatus.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textRStatus.setColumns(10);
 		
-		textField_5 = new JTextField();
-		textField_5.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_5.setColumns(10);
+		textUpdated = new JTextField();
+		textUpdated.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textUpdated.setColumns(10);
 		
-		textField_6 = new JTextField();
-		textField_6.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_6.setColumns(10);
+		textReviewed = new JTextField();
+		textReviewed.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textReviewed.setColumns(10);
 		
-		textField_7 = new JTextField();
-		textField_7.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_7.setColumns(10);
+		textOnset = new JTextField();
+		textOnset.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textOnset.setColumns(10);
 		
-		textField_8 = new JTextField();
-		textField_8.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_8.setColumns(10);
+		textComment = new JTextField();
+		textComment.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textComment.setColumns(10);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"FOOD", "Balsam of Peru", "Egg", "Fish or shellfish", "Fruit", "Gluten", "Garlic", "Hot peppers", "Oats", "Meat", "Milk", "Peanut", "Rice", "Sesame", "Soy", "Sulfites", "Tartrazine", "Tree nut", "Wheat", "", "DRUG", "Balsam of Peru", "Cephalosporins", "Dilantin", "Intravenous contrast dye", "Local anesthetics", "Non-Seroidal anti-inflammatories", "(Cromolyn sodium, nedocrmil sodium, etc.)", "Penicillin", "Sulfonamides", "Tegretol", "Tetracycline", "", "ENVIRONMENTAL", "Balsam of Peru", "Cat", "Chromium", "Cobalt Chloride", "Cosmetics", "Dog ", "Formaldehyde", "Fungicide", "Gold (gold sodium thiosulfate)", "House dust mite", "Insect Sting", "Latex", "Mold", "Nickel(nickel sulfate hexahydrate)", "Perfume", "Photographic developers", "Pollen", "Semen", "Water"}));
-		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JComboBox comboType = new JComboBox();
+		comboType.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboType = (JComboBox<String>) e.getSource();
+		        String selectedItem = (String) comboType.getSelectedItem();
+			}
+		});
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Low", "Medium", "High", "Critical"}));
-		comboBox_1.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		comboType.setModel(new DefaultComboBoxModel(new String[] {"FOOD", "Balsam of Peru", "Egg", "Fish or shellfish", "Fruit", "Gluten", "Garlic", "Hot peppers", "Oats", "Meat", "Milk", "Peanut", "Rice", "Sesame", "Soy", "Sulfites", "Tartrazine", "Tree nut", "Wheat", "", "DRUG", "Balsam of Peru", "Cephalosporins", "Dilantin", "Intravenous contrast dye", "Local anesthetics", "Non-Seroidal anti-inflammatories", "(Cromolyn sodium, nedocrmil sodium, etc.)", "Penicillin", "Sulfonamides", "Tegretol", "Tetracycline", "", "ENVIRONMENTAL", "Balsam of Peru", "Cat", "Chromium", "Cobalt Chloride", "Cosmetics", "Dog ", "Formaldehyde", "Fungicide", "Gold (gold sodium thiosulfate)", "House dust mite", "Insect Sting", "Latex", "Mold", "Nickel(nickel sulfate hexahydrate)", "Perfume", "Photographic developers", "Pollen", "Semen", "Water"}));
+		comboType.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBox_2 = new JComboBox();
-		comboBox_2.setModel(new DefaultComboBoxModel(new String[] {"Yes", "No"}));
-		comboBox_2.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JComboBox comboSeverity = new JComboBox();
+		comboSeverity.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboSeverity = (JComboBox<String>) e.getSource();
+		        String selectedSeverity = (String) comboSeverity.getSelectedItem();
+			}
+		});
+		comboSeverity.setModel(new DefaultComboBoxModel(new String[] {"Low", "Medium", "High", "Critical"}));
+		comboSeverity.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBox_3 = new JComboBox();
-		comboBox_3.setModel(new DefaultComboBoxModel(new String[] {"Drug", "Food ", "Rhinitis", "Seasonal", "Skin", "Pet"}));
-		comboBox_3.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JComboBox comboInteraction = new JComboBox();
+		comboInteraction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboInteraction = (JComboBox<String>) e.getSource();
+		        String selectedInteraction = (String) comboInteraction.getSelectedItem();
+			}
+		});
+		comboInteraction.setModel(new DefaultComboBoxModel(new String[] {"Yes", "No"}));
+		comboInteraction.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		
+		JComboBox comboSource = new JComboBox();
+		comboSource.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboSource = (JComboBox<String>) e.getSource();
+		        String selectedSource = (String) comboSource.getSelectedItem();
+			}
+		});
+		comboSource.setModel(new DefaultComboBoxModel(new String[] {"Drug", "Food ", "Rhinitis", "Seasonal", "Skin", "Pet"}));
+		comboSource.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
 		JButton btnNewButton = new JButton("Update");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					 String sub=textSubstance.getText();
+					 String selectedType = (String) comboType.getSelectedItem();
+					 String cat=textCategory.getText();
+					 String selectedSeverity = (String) comboSeverity.getSelectedItem();
+					 String react=textReactions.getText();
+					 String rStatus=textRStatus.getText();
+					 String selectedInteraction = (String) comboInteraction.getSelectedItem();
+					 String selectedSource = (String) comboSource.getSelectedItem();
+					 String updated=textUpdated.getText();
+					 String review=textReviewed.getText();
+					 String onset=textOnset.getText();
+					 String comment=textComment.getText();
+					String sql = "UPDATE names SET Substance = '"+sub+"', Type = '"+selectedType+"', Category = '"+cat+"',  Severity = '"+selectedSeverity+"', Reactions = '"+react+"', Reaction_Status = '"+rStatus+"', Interaction = '"+selectedInteraction+"', Source = '"+selectedSource+"', Updated_Time = '"+updated+"', Reviewed_By = '"+review+"', Estimated_Onset = '"+onset+"', Comment = '"+comment+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					PreparedStatement stmt = con.prepareStatement(sql);
+					stmt.executeUpdate(sql);
+					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
+				} 
+				catch(Exception e) {System.out.print(e);}
+			}
+		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton button = new JButton("Exit");
@@ -304,6 +444,21 @@ public class EMR_Nurse extends JFrame {
 			}
 		});
 		button.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton button_5 = new JButton("Clear");
+		button_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textSubstance.setText(null);
+				textCategory.setText(null);
+				textReactions.setText(null);
+				textRStatus.setText(null);
+				textUpdated.setText(null);
+				textReviewed.setText(null);
+				textOnset.setText(null);
+				textComment.setText(null);
+			}
+		});
+		button_5.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -324,25 +479,27 @@ public class EMR_Nurse extends JFrame {
 						.addComponent(lblComment))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(textField_5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(comboBox_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(comboBox_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(comboBox_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(textField_3, 489, 489, 489)
-						.addComponent(textField_8, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+						.addComponent(textUpdated, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textOnset, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(comboType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(comboSeverity, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(comboInteraction, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(comboSource, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textReactions, 489, 489, 489)
+						.addComponent(textComment, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
 						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING, false)
-							.addComponent(textField_6, Alignment.LEADING)
-							.addComponent(textField_4, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
+							.addComponent(textReviewed, Alignment.LEADING)
+							.addComponent(textRStatus, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
 						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING, false)
-							.addComponent(textField_2, Alignment.LEADING)
-							.addComponent(textField_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)))
+							.addComponent(textCategory, Alignment.LEADING)
+							.addComponent(textSubstance, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)))
 					.addGap(186))
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGap(69)
 					.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 680, Short.MAX_VALUE)
+					.addGap(261)
+					.addComponent(button_5, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 311, Short.MAX_VALUE)
 					.addComponent(button, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
 					.addGap(69))
 		);
@@ -352,55 +509,56 @@ public class EMR_Nurse extends JFrame {
 					.addGap(51)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblSubstance)
-						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textSubstance, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblType)
-						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblCategory)
-						.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textCategory, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblSeverity)
-						.addComponent(comboBox_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboSeverity, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblReactions)
-						.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textReactions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblReactionStatus)
-						.addComponent(textField_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textRStatus, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblInteraction)
-						.addComponent(comboBox_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboInteraction, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblSource)
-						.addComponent(comboBox_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboSource, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblUpdatedTime)
-						.addComponent(textField_5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textUpdated, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblReviewedBy)
-						.addComponent(textField_6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textReviewed, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textOnset, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblEstimatedOnset))
 					.addGap(18)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textField_8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textComment, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblComment))
-					.addPreferredGap(ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-						.addComponent(button, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+						.addComponent(button, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(button_5, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 					.addGap(51))
 		);
 		panel_1.setLayout(gl_panel_1);
@@ -411,22 +569,28 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblPulseRate = new JLabel("Pulse Rate:");
 		lblPulseRate.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_9 = new JTextField();
-		textField_9.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_9.setColumns(10);
+		textPulse = new JTextField();
+		textPulse.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textPulse.setColumns(10);
 		
 		JLabel lblBeatsPerMinute = new JLabel("beats per minute");
 		
 		JLabel lblRhythm = new JLabel("Rhythm:");
 		lblRhythm.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBox_4 = new JComboBox();
-		comboBox_4.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Regular", "Arrhythmia", "Tachycardia", "Bradycardia"}));
-		comboBox_4.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JComboBox comboRythm = new JComboBox();
+		comboRythm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboRythm = (JComboBox<String>) e.getSource();
+		        String selectedRythm = (String) comboRythm.getSelectedItem();
+			}
+		});
+		comboRythm.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Regular", "Arrhythmia", "Tachycardia", "Bradycardia"}));
+		comboRythm.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_10 = new JTextField();
-		textField_10.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_10.setColumns(10);
+		textRythm = new JTextField();
+		textRythm.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textRythm.setColumns(10);
 		
 		JLabel lblBloodPressure = new JLabel("Blood Pressure:");
 		lblBloodPressure.setFont(new Font("Tahoma", Font.PLAIN, 17));
@@ -435,16 +599,16 @@ public class EMR_Nurse extends JFrame {
 		
 		JLabel lblDiastolic = new JLabel("Diastolic (60-79)");
 		
-		textField_11 = new JTextField();
-		textField_11.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_11.setColumns(10);
+		textBP1 = new JTextField();
+		textBP1.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textBP1.setColumns(10);
 		
 		JLabel label = new JLabel("/");
 		label.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_12 = new JTextField();
-		textField_12.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_12.setColumns(10);
+		textBP2 = new JTextField();
+		textBP2.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textBP2.setColumns(10);
 		
 		JLabel lblLocation = new JLabel("Location:");
 		lblLocation.setFont(new Font("Tahoma", Font.PLAIN, 17));
@@ -455,24 +619,42 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblLocation_1 = new JLabel("Location:");
 		lblLocation_1.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBox_5 = new JComboBox();
-		comboBox_5.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		comboBox_5.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Left Arm", "Right Arm"}));
+		JComboBox comboBPLocation = new JComboBox();
+		comboBPLocation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboBPLocation = (JComboBox<String>) e.getSource();
+		        String selectedBLoc = (String) comboBPLocation.getSelectedItem();
+			}
+		});
+		comboBPLocation.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		comboBPLocation.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Left Arm", "Right Arm"}));
 		
-		JComboBox comboBox_6 = new JComboBox();
-		comboBox_6.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Radial", "Carotid", "Femoral", "Pedal", "Brachial", "Apical"}));
-		comboBox_6.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JComboBox comboPLocation = new JComboBox();
+		comboPLocation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboPLocation = (JComboBox<String>) e.getSource();
+		        String selectedLoc = (String) comboPLocation.getSelectedItem();
+			}
+		});
+		comboPLocation.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Radial", "Carotid", "Femoral", "Pedal", "Brachial", "Apical"}));
+		comboPLocation.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBox_7 = new JComboBox();
-		comboBox_7.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Sitting", "Standing", "Laying"}));
-		comboBox_7.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JComboBox comboBPPosition = new JComboBox();
+		comboBPPosition.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboBPPostion = (JComboBox<String>) e.getSource();
+		        String selectedBPos = (String) comboBPPosition.getSelectedItem();
+			}
+		});
+		comboBPPosition.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Sitting", "Standing", "Laying"}));
+		comboBPPosition.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JLabel lblRespitoryRate = new JLabel("Respitory Rate:");
+		JLabel lblRespitoryRate = new JLabel("Respiratory Rate:");
 		lblRespitoryRate.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_13 = new JTextField();
-		textField_13.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_13.setColumns(10);
+		textRespiratory = new JTextField();
+		textRespiratory.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textRespiratory.setColumns(10);
 		
 		JLabel lblUnitType = new JLabel("Unit Type:");
 		lblUnitType.setFont(new Font("Tahoma", Font.PLAIN, 17));
@@ -484,42 +666,80 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblTemperature = new JLabel("Temperature:");
 		lblTemperature.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_14 = new JTextField();
-		textField_14.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_14.setColumns(10);
+		textTemp = new JTextField();
+		textTemp.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textTemp.setColumns(10);
 		
 		JLabel lblF = new JLabel("(92-103) F");
 		
 		JLabel lblLocation_2 = new JLabel("Location:");
 		lblLocation_2.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBox_8 = new JComboBox();
-		comboBox_8.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Orally", "Rectally", "Axillary", "By Ear", "By Skin"}));
-		comboBox_8.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JComboBox comboTempLocation = new JComboBox();
+		comboTempLocation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> comboTempLocation = (JComboBox<String>) e.getSource();
+		        String selectedTLoc = (String) comboTempLocation.getSelectedItem();
+			}
+		});
+		comboTempLocation.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Orally", "Rectally", "Axillary", "By Ear", "By Skin"}));
+		comboTempLocation.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_15 = new JTextField();
-		textField_15.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_15.setColumns(10);
+		textTempLocation = new JTextField();
+		textTempLocation.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textTempLocation.setColumns(10);
 		
 		JLabel lblHeight = new JLabel("Height:");
 		lblHeight.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_16 = new JTextField();
-		textField_16.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_16.setColumns(10);
+		textHeight = new JTextField();
+		textHeight.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textHeight.setColumns(10);
 		
 		JLabel lblWeight = new JLabel("Weight:");
 		lblWeight.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		textField_17 = new JTextField();
-		textField_17.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField_17.setColumns(10);
+		textWeight = new JTextField();
+		textWeight.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textWeight.setColumns(10);
 		
 		JLabel lblInches = new JLabel("inches");
 		
 		JLabel lblPounds = new JLabel("pounds");
 		
 		JButton btnUpdate = new JButton("Update");
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					 String pulse=textPulse.getText();
+					 String selectedLoc = (String) comboPLocation.getSelectedItem();
+					 String selectedRythm = (String) comboRythm.getSelectedItem();
+					 String rythm=textRythm.getText();
+					 String sys=textBP1.getText();
+					 String dia=textBP2.getText();
+					 String selectedBLoc = (String) comboBPLocation.getSelectedItem();
+					 String selectedBPos = (String) comboBPPosition.getSelectedItem();
+					 String respit=textRespiratory.getText();
+					 String unit = null;
+					 if(rdbtnUsStandard.isSelected())
+					        unit="US Standard";
+					else if(rdbtnMetric.isSelected()) 
+					        unit="Metric";
+					 String temp=textTemp.getText();
+					 String selectedTLoc = (String) comboTempLocation.getSelectedItem();
+					 String note=textTempLocation.getText();
+					 String height=textHeight.getText();
+					 String weight=textWeight.getText();
+					String sql = "UPDATE names SET Pulse_Rate = '"+pulse+"', Location_Pulse = '"+selectedLoc+"', Rythm_Type = '"+selectedRythm+"',  Rythm = '"+rythm+"', Systolic = '"+sys+"', Diastolic = '"+dia+"', BP_Location = '"+selectedBLoc+"', BP_Position = '"+selectedBPos+"', Respiratory_Rate = '"+respit+"', Temperature = '"+temp+"', Unit_Type = '"+unit+"', T_Location = '"+selectedTLoc+"', T_Note = '"+note+"', Height = '"+height+"', Weight = '"+weight+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					PreparedStatement stmt = con.prepareStatement(sql);
+					stmt.executeUpdate(sql);
+					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
+				} 
+				catch(Exception e1) {System.out.print(e1);}
+			}
+		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton button_1 = new JButton("Exit");
@@ -533,9 +753,25 @@ public class EMR_Nurse extends JFrame {
 			}
 		});
 		button_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton button_6 = new JButton("Clear");
+		button_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPulse.setText(null);
+				textRythm.setText(null);
+				textBP1.setText(null);
+				textBP2.setText(null);
+				textRespiratory.setText(null);
+				textTemp.setText(null);
+				textTempLocation.setText(null);
+				textHeight.setText(null);
+				textWeight.setText(null);
+			}
+		});
+		button_6.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
-			gl_panel_2.createParallelGroup(Alignment.TRAILING)
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addGap(96)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING)
@@ -551,24 +787,24 @@ public class EMR_Nurse extends JFrame {
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING)
 								.addComponent(lblSystolic)
-								.addComponent(comboBox_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(comboRythm, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel_2.createSequentialGroup()
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textField_10, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addComponent(textRythm, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_panel_2.createSequentialGroup()
 									.addGap(67)
 									.addComponent(lblDiastolic))))
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel_2.createSequentialGroup()
-									.addComponent(textField_11, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(textBP1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(label)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textField_12, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addComponent(textBP2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_panel_2.createSequentialGroup()
-									.addComponent(textField_9, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(textPulse, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(lblBeatsPerMinute)))
 							.addGap(18)
@@ -578,20 +814,20 @@ public class EMR_Nurse extends JFrame {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel_2.createSequentialGroup()
-									.addComponent(comboBox_5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(comboBPLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addGap(18)
 									.addComponent(lblNewLabel)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(comboBox_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addComponent(comboBox_6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+									.addComponent(comboBPPosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(comboPLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel_2.createSequentialGroup()
-									.addComponent(textField_13, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(textRespiratory, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addGap(18)
 									.addComponent(lblUnitType))
 								.addGroup(gl_panel_2.createSequentialGroup()
-									.addComponent(textField_14, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(textTemp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(lblF)))
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -599,26 +835,28 @@ public class EMR_Nurse extends JFrame {
 								.addGroup(gl_panel_2.createSequentialGroup()
 									.addComponent(lblLocation_2)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(comboBox_8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(comboTempLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textField_15, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addComponent(textTempLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_panel_2.createSequentialGroup()
 									.addComponent(rdbtnUsStandard)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(rdbtnMetric))))
 						.addGroup(gl_panel_2.createSequentialGroup()
-							.addComponent(textField_16, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(textHeight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblInches))
 						.addGroup(gl_panel_2.createSequentialGroup()
-							.addComponent(textField_17, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(textWeight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblPounds)))
-					.addContainerGap(103, Short.MAX_VALUE))
-				.addGroup(Alignment.LEADING, gl_panel_2.createSequentialGroup()
+					.addContainerGap(88, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
 					.addGap(69)
 					.addComponent(btnUpdate, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 670, Short.MAX_VALUE)
+					.addGap(263)
+					.addComponent(button_6, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 309, Short.MAX_VALUE)
 					.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
 					.addGap(69))
 		);
@@ -628,15 +866,15 @@ public class EMR_Nurse extends JFrame {
 					.addGap(47)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblPulseRate)
-						.addComponent(textField_9, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textPulse, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblBeatsPerMinute)
 						.addComponent(lblLocation_1)
-						.addComponent(comboBox_6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboPLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblRhythm)
-						.addComponent(comboBox_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(textField_10, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboRythm, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textRythm, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblBloodPressure)
@@ -644,42 +882,43 @@ public class EMR_Nurse extends JFrame {
 						.addComponent(lblDiastolic))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textField_11, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textBP1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(label)
-						.addComponent(textField_12, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textBP2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblLocation)
-						.addComponent(comboBox_5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(comboBPLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblNewLabel)
-						.addComponent(comboBox_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboBPPosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblRespitoryRate)
-						.addComponent(textField_13, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textRespiratory, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblUnitType)
 						.addComponent(rdbtnUsStandard)
 						.addComponent(rdbtnMetric))
 					.addGap(18)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblTemperature)
-						.addComponent(textField_14, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textTemp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblF)
 						.addComponent(lblLocation_2)
-						.addComponent(comboBox_8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(textField_15, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboTempLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textTempLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblHeight)
-						.addComponent(textField_16, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textHeight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblInches))
 					.addGap(18)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblWeight)
-						.addComponent(textField_17, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textWeight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblPounds))
-					.addPreferredGap(ComponentPlacement.RELATED, 225, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 184, Short.MAX_VALUE)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnUpdate)
-						.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+						.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(button_6, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 					.addGap(51))
 		);
 		panel_2.setLayout(gl_panel_2);
@@ -690,10 +929,25 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblReasonForPatient = new JLabel("Reason for Patient Visit:");
 		lblReasonForPatient.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JTextPane textPane_1 = new JTextPane();
-		textPane_1.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JTextPane textPane_Reason = new JTextPane();
+		textPane_Reason.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
 		JButton btnUpdate_1 = new JButton("Update");
+		btnUpdate_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					 String reason=textPane_Reason.getText();
+					String sql = "UPDATE names SET Reason_For_Visit = '"+reason+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					PreparedStatement stmt = con.prepareStatement(sql);
+					stmt.executeUpdate(sql);
+					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
+				} 
+				catch(Exception e1) {System.out.print(e1);
+				}
+				}
+		});
 		btnUpdate_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton button_2 = new JButton("Exit");
@@ -707,19 +961,29 @@ public class EMR_Nurse extends JFrame {
 			}
 		});
 		button_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton button_7 = new JButton("Clear");
+		button_7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane_Reason.setText(null);
+			}
+		});
+		button_7.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_3.createSequentialGroup()
 					.addGap(210)
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addComponent(textPane_1, GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
+						.addComponent(textPane_Reason, GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
 						.addComponent(lblReasonForPatient))
 					.addGap(207))
 				.addGroup(gl_panel_3.createSequentialGroup()
 					.addGap(69)
 					.addComponent(btnUpdate_1, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 671, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 289, Short.MAX_VALUE)
+					.addComponent(button_7, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+					.addGap(283)
 					.addComponent(button_2, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
 					.addGap(69))
 		);
@@ -729,11 +993,12 @@ public class EMR_Nurse extends JFrame {
 					.addGap(80)
 					.addComponent(lblReasonForPatient)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, 363, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
+					.addComponent(textPane_Reason, GroupLayout.PREFERRED_SIZE, 363, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnUpdate_1)
-						.addComponent(button_2, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+						.addComponent(button_2, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(button_7, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 					.addGap(51))
 		);
 		panel_3.setLayout(gl_panel_3);
@@ -744,16 +1009,31 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblPatientQuestions = new JLabel("Patient Questions:");
 		lblPatientQuestions.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JTextPane textPane_2 = new JTextPane();
-		textPane_2.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JTextPane textPane_Questions = new JTextPane();
+		textPane_Questions.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
 		JLabel lblPatientConcerns = new JLabel("Patient Concerns:");
 		lblPatientConcerns.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JTextPane textPane_3 = new JTextPane();
-		textPane_3.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JTextPane textPane_Concerns = new JTextPane();
+		textPane_Concerns.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
 		JButton btnUpdate_2 = new JButton("Update");
+		btnUpdate_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					 String questions=textPane_Questions.getText();
+					 String concerns=textPane_Concerns.getText();
+					String sql = "UPDATE names SET Questions = '"+questions+"', Concerns = '"+concerns+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					PreparedStatement stmt = con.prepareStatement(sql);
+					stmt.executeUpdate(sql);
+					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
+				} 
+				catch(Exception e1) {System.out.print(e1);}
+			}
+		});
 		btnUpdate_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton button_3 = new JButton("Exit");
@@ -767,13 +1047,24 @@ public class EMR_Nurse extends JFrame {
 			}
 		});
 		button_3.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton button_8 = new JButton("Clear");
+		button_8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane_Questions.setText(null);
+				textPane_Concerns.setText(null);
+			}
+		});
+		button_8.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_panel_4 = new GroupLayout(panel_4);
 		gl_panel_4.setHorizontalGroup(
 			gl_panel_4.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_4.createSequentialGroup()
 					.addGap(69)
 					.addComponent(btnUpdate_2, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 672, Short.MAX_VALUE)
+					.addGap(271)
+					.addComponent(button_8, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 301, Short.MAX_VALUE)
 					.addComponent(button_3, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
 					.addGap(69))
 				.addGroup(gl_panel_4.createSequentialGroup()
@@ -783,12 +1074,12 @@ public class EMR_Nurse extends JFrame {
 							.addComponent(lblPatientConcerns)
 							.addContainerGap())
 						.addGroup(gl_panel_4.createSequentialGroup()
-							.addGroup(gl_panel_4.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panel_4.createParallelGroup(Alignment.TRAILING)
 								.addComponent(lblPatientQuestions)
-								.addGroup(Alignment.TRAILING, gl_panel_4.createSequentialGroup()
+								.addGroup(gl_panel_4.createSequentialGroup()
 									.addGroup(gl_panel_4.createParallelGroup(Alignment.TRAILING)
-										.addComponent(textPane_3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
-										.addComponent(textPane_2, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE))
+										.addComponent(textPane_Concerns, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
+										.addComponent(textPane_Questions, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE))
 									.addGap(2)))
 							.addGap(180))))
 		);
@@ -798,15 +1089,16 @@ public class EMR_Nurse extends JFrame {
 					.addGap(94)
 					.addComponent(lblPatientQuestions)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(textPane_2, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
+					.addComponent(textPane_Questions, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
 					.addGap(43)
 					.addComponent(lblPatientConcerns)
 					.addGap(18)
-					.addComponent(textPane_3, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+					.addComponent(textPane_Concerns, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
 					.addGroup(gl_panel_4.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnUpdate_2)
-						.addComponent(button_3, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+						.addComponent(button_3, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(button_8, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 					.addGap(51))
 		);
 		panel_4.setLayout(gl_panel_4);
