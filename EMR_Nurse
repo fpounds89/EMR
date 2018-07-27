@@ -6,8 +6,6 @@ import java.awt.EventQueue;
 
 import java.sql.*;
 import javax.swing.*;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelListener;
 
@@ -17,6 +15,7 @@ import java.awt.Desktop;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.sql.Connection;
@@ -27,24 +26,11 @@ import java.sql.Statement;
 import java.util.Vector;
 import java.awt.GridLayout;
 
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import java.awt.Font;
-import javax.swing.JTextField;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JTextPane;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.SwingConstants;
-import javax.swing.JEditorPane;
-import javax.swing.JCheckBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JRadioButton;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
@@ -57,6 +43,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import base.DBBase;
+import base.DBConnect;
 
 public class EMR_Nurse extends JFrame {
 	
@@ -82,6 +71,8 @@ public class EMR_Nurse extends JFrame {
 	private JTextField textWeight;
 	private JTable table;
 
+	private DBConnect con;
+	private DBBase data;
 	
 	/**
 	 * Launch the application.
@@ -111,44 +102,41 @@ public class EMR_Nurse extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
+		con = new DBConnect();
+		data = new DBBase();
+		con.initialise("root", "password");
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
 		JLabel lblElectronicMedicalRecord = new JLabel("ELECTRONIC MEDICAL RECORD");
 		lblElectronicMedicalRecord.setFont(new Font("Times New Roman", Font.BOLD, 35));
 		
-		JLabel lblLastName = new JLabel("");
+		JLabel lblLastName = new JLabel("Patient ID:");
 		lblLastName.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		JLabel lblFirstName = new JLabel("");
-		lblFirstName.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
-		JLabel label_1 = new JLabel(",");
-		label_1.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		JLabel lblPID = new JLabel("");
+		lblPID.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 1015, Short.MAX_VALUE)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 1015, Short.MAX_VALUE)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(lblElectronicMedicalRecord)
+							.addGap(218)
+							.addComponent(lblLastName)
+							.addGap(22)
+							.addComponent(lblPID)))
 					.addContainerGap())
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(lblElectronicMedicalRecord)
-					.addGap(218)
-					.addComponent(lblLastName)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(label_1)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblFirstName)
-					.addContainerGap(142, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblElectronicMedicalRecord)
-						.addComponent(label_1)
 						.addComponent(lblLastName)
-						.addComponent(lblFirstName))
+						.addComponent(lblPID))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 671, Short.MAX_VALUE)
 					.addGap(3))
@@ -170,8 +158,7 @@ public class EMR_Nurse extends JFrame {
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
 			int selectedRowIndex = table.getSelectedRow();
 			
-			lblLastName.setText(model.getValueAt(selectedRowIndex,1).toString());
-			lblFirstName.setText(model.getValueAt(selectedRowIndex, 0).toString());
+			lblPID.setText(model.getValueAt(selectedRowIndex, 0).toString());
 			}
 		});
 		btnSelect.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -194,14 +181,21 @@ public class EMR_Nurse extends JFrame {
 		
 		JButton btnSearch = new JButton("Load Patients");
 		btnSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+	
+		public void actionPerformed(ActionEvent arg0) {
+			//ResultSet rs = data.query(con.getConnection(), "patient", Collections.emptyMap());
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
-					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					Connection con = DriverManager.getConnection("jdbc:mysql://35.226.84.132:3306/EMR?user=root&password=password\";\r\n" + 
+							"    			connection", "root", "password");
 					Statement stmt = con.createStatement();
-					String sql = "Select First_Name, Last_Name from names";
+					String sql = "Select patient_id, first_name, last_name, DOB from PATIENT";
 					ResultSet rs = stmt.executeQuery(sql);
 					table.setModel (DbUtils.resultSetToTableModel(rs));
+					//table = new JTable(data.fitToTable(rs));
+					//JScrollPane scrollPane = new JScrollPane(table);
+					//scrollPane.setBounds(52, 135, 678, 270);
+					//panel.add(scrollPane);
 					
 				} 
 				catch(Exception e) {System.out.print(e);}
@@ -213,11 +207,33 @@ public class EMR_Nurse extends JFrame {
 		
 		JButton btnSearch_1 = new JButton("Search");
 		btnSearch_1.addActionListener(new ActionListener() {
+			//@Override
+			//public void actionPerformed(ActionEvent arg0) {
+				//String searchText = firstname.getText();
+
+				//if( !searchText.equals("") )
+				//{
+					//Map<String, Object> map = new HashMap<String, Object>();
+					//map.put("username", searchText);
+
+					//ResultSet rs = data.query(con.getConnection(), "user", map);
+					//try
+					//{
+						//table = new JTable(data.fitToTable(rs));
+						//JScrollPane scrollPane = new JScrollPane(table);
+						//scrollPane.setBounds(52, 135, 678, 270);
+						//panel.add(scrollPane);
+					//} catch (SQLException e1) {
+						//e1.printStackTrace();
+					//}
+				//}
+			//}
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
-					String sql = "Select First_Name, Last_Name from names WHERE First_Name ='" +firstname.getText()+ "'";
+					Connection con = DriverManager.getConnection("jdbc:mysql://35.226.84.132:3306/EMR?user=root&password=password\";\r\n" + 
+							"    			connection", "root", "password");
+					String sql = "Select patient_id, first_name, last_name, DOB from PATIENT WHERE first_name ='" +firstname.getText()+ "'";
 					Statement stmt = con.createStatement();
 					ResultSet rs = stmt.executeQuery(sql);
 					table.setModel (DbUtils.resultSetToTableModel(rs));
@@ -410,7 +426,8 @@ public class EMR_Nurse extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					Connection con = DriverManager.getConnection("jdbc:mysql://35.226.84.132:3306/EMR?user=root&password=password\";\r\n" + 
+							"    			connection", "root", "password");
 					 String sub=textSubstance.getText();
 					 String selectedType = (String) comboType.getSelectedItem();
 					 String cat=textCategory.getText();
@@ -423,7 +440,7 @@ public class EMR_Nurse extends JFrame {
 					 String review=textReviewed.getText();
 					 String onset=textOnset.getText();
 					 String comment=textComment.getText();
-					String sql = "UPDATE names SET Substance = '"+sub+"', Type = '"+selectedType+"', Category = '"+cat+"',  Severity = '"+selectedSeverity+"', Reactions = '"+react+"', Reaction_Status = '"+rStatus+"', Interaction = '"+selectedInteraction+"', Source = '"+selectedSource+"', Updated_Time = '"+updated+"', Reviewed_By = '"+review+"', Estimated_Onset = '"+onset+"', Comment = '"+comment+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					String sql = "UPDATE ALLERGY SET Substance = '"+sub+"', Type = '"+selectedType+"', Category = '"+cat+"',  Severity = '"+selectedSeverity+"', Reactions = '"+react+"', Reaction_Status = '"+rStatus+"', Interaction = '"+selectedInteraction+"', Source = '"+selectedSource+"', Updated_Time = '"+updated+"', Reviewed_By = '"+review+"', Estimated_Onset = '"+onset+"', Comment = '"+comment+"'  WHERE patient_id ='" +lblPID.getText()+"'";
 					PreparedStatement stmt = con.prepareStatement(sql);
 					stmt.executeUpdate(sql);
 					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
@@ -712,7 +729,8 @@ public class EMR_Nurse extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					Connection con = DriverManager.getConnection("jdbc:mysql://35.226.84.132:3306/EMR?user=root&password=password\";\r\n" + 
+							"    			connection", "root", "password");
 					 String pulse=textPulse.getText();
 					 String selectedLoc = (String) comboPLocation.getSelectedItem();
 					 String selectedRythm = (String) comboRythm.getSelectedItem();
@@ -732,7 +750,7 @@ public class EMR_Nurse extends JFrame {
 					 String note=textTempLocation.getText();
 					 String height=textHeight.getText();
 					 String weight=textWeight.getText();
-					String sql = "UPDATE names SET Pulse_Rate = '"+pulse+"', Location_Pulse = '"+selectedLoc+"', Rythm_Type = '"+selectedRythm+"',  Rythm = '"+rythm+"', Systolic = '"+sys+"', Diastolic = '"+dia+"', BP_Location = '"+selectedBLoc+"', BP_Position = '"+selectedBPos+"', Respiratory_Rate = '"+respit+"', Temperature = '"+temp+"', Unit_Type = '"+unit+"', T_Location = '"+selectedTLoc+"', T_Note = '"+note+"', Height = '"+height+"', Weight = '"+weight+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					String sql = "UPDATE VITALS SET Pulse_Rate = '"+pulse+"', Location_Pulse = '"+selectedLoc+"', Rythm_Type = '"+selectedRythm+"',  Rythm = '"+rythm+"', Systolic = '"+sys+"', Diastolic = '"+dia+"', BP_Location = '"+selectedBLoc+"', BP_Position = '"+selectedBPos+"', Respiratory_Rate = '"+respit+"', Temperature = '"+temp+"', Unit_Type = '"+unit+"', Temp_Location = '"+selectedTLoc+"', Temp_Note = '"+note+"', Height = '"+height+"', Weight = '"+weight+"'  WHERE patient_id ='" +lblPID.getText()+"'";
 					PreparedStatement stmt = con.prepareStatement(sql);
 					stmt.executeUpdate(sql);
 					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
@@ -937,9 +955,10 @@ public class EMR_Nurse extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					Connection con = DriverManager.getConnection("jdbc:mysql://35.226.84.132:3306/EMR?user=root&password=password\";\r\n" + 
+							"    			connection", "root", "password");
 					 String reason=textPane_Reason.getText();
-					String sql = "UPDATE names SET Reason_For_Visit = '"+reason+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					String sql = "UPDATE VISIT SET reason = '"+reason+"'  WHERE patient_id ='" +lblPID.getText()+"'";
 					PreparedStatement stmt = con.prepareStatement(sql);
 					stmt.executeUpdate(sql);
 					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
@@ -1023,10 +1042,11 @@ public class EMR_Nurse extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/patients", "root", "root");
+					Connection con = DriverManager.getConnection("jdbc:mysql://35.226.84.132:3306/EMR?user=root&password=password\";\r\n" + 
+							"    			connection", "root", "password");
 					 String questions=textPane_Questions.getText();
 					 String concerns=textPane_Concerns.getText();
-					String sql = "UPDATE names SET Questions = '"+questions+"', Concerns = '"+concerns+"'  WHERE Last_Name ='" +lblLastName.getText()+"'";
+					String sql = "UPDATE APPOINTMENT_DETAILS SET comments = '"+questions+"', comments = '"+concerns+"'  WHERE patient_id ='" +lblPID.getText()+"'";
 					PreparedStatement stmt = con.prepareStatement(sql);
 					stmt.executeUpdate(sql);
 					JOptionPane.showMessageDialog(null,"Inserted Successfully!");
@@ -1071,24 +1091,24 @@ public class EMR_Nurse extends JFrame {
 					.addGap(162)
 					.addGroup(gl_panel_4.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel_4.createSequentialGroup()
-							.addComponent(lblPatientConcerns)
+							.addComponent(lblPatientQuestions)
 							.addContainerGap())
-						.addGroup(gl_panel_4.createSequentialGroup()
-							.addGroup(gl_panel_4.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblPatientQuestions)
-								.addGroup(gl_panel_4.createSequentialGroup()
-									.addGroup(gl_panel_4.createParallelGroup(Alignment.TRAILING)
-										.addComponent(textPane_Concerns, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
-										.addComponent(textPane_Questions, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE))
-									.addGap(2)))
-							.addGap(180))))
+						.addGroup(gl_panel_4.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panel_4.createSequentialGroup()
+								.addComponent(lblPatientConcerns)
+								.addContainerGap())
+							.addGroup(gl_panel_4.createSequentialGroup()
+								.addGroup(gl_panel_4.createParallelGroup(Alignment.TRAILING)
+									.addComponent(textPane_Concerns, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
+									.addComponent(textPane_Questions, GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE))
+								.addGap(182)))))
 		);
 		gl_panel_4.setVerticalGroup(
 			gl_panel_4.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_4.createSequentialGroup()
-					.addGap(94)
+					.addGap(88)
 					.addComponent(lblPatientQuestions)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(textPane_Questions, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
 					.addGap(43)
 					.addComponent(lblPatientConcerns)
