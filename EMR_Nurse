@@ -114,7 +114,7 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblLastName = new JLabel("Patient ID:");
 		lblLastName.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		JLabel lblPID = new JLabel("");
+		final JLabel lblPID = new JLabel("");
 		lblPID.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -380,7 +380,7 @@ public class EMR_Nurse extends JFrame {
 		textComment.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		textComment.setColumns(10);
 		
-		JComboBox comboType = new JComboBox();
+		final JComboBox comboType = new JComboBox();
 		comboType.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboType = (JComboBox<String>) e.getSource();
@@ -391,7 +391,7 @@ public class EMR_Nurse extends JFrame {
 		comboType.setModel(new DefaultComboBoxModel(new String[] {"FOOD", "Balsam of Peru", "Egg", "Fish or shellfish", "Fruit", "Gluten", "Garlic", "Hot peppers", "Oats", "Meat", "Milk", "Peanut", "Rice", "Sesame", "Soy", "Sulfites", "Tartrazine", "Tree nut", "Wheat", "", "DRUG", "Balsam of Peru", "Cephalosporins", "Dilantin", "Intravenous contrast dye", "Local anesthetics", "Non-Seroidal anti-inflammatories", "(Cromolyn sodium, nedocrmil sodium, etc.)", "Penicillin", "Sulfonamides", "Tegretol", "Tetracycline", "", "ENVIRONMENTAL", "Balsam of Peru", "Cat", "Chromium", "Cobalt Chloride", "Cosmetics", "Dog ", "Formaldehyde", "Fungicide", "Gold (gold sodium thiosulfate)", "House dust mite", "Insect Sting", "Latex", "Mold", "Nickel(nickel sulfate hexahydrate)", "Perfume", "Photographic developers", "Pollen", "Semen", "Water"}));
 		comboType.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboSeverity = new JComboBox();
+		final JComboBox comboSeverity = new JComboBox();
 		comboSeverity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboSeverity = (JComboBox<String>) e.getSource();
@@ -401,7 +401,7 @@ public class EMR_Nurse extends JFrame {
 		comboSeverity.setModel(new DefaultComboBoxModel(new String[] {"Low", "Medium", "High", "Critical"}));
 		comboSeverity.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboInteraction = new JComboBox();
+		final JComboBox comboInteraction = new JComboBox();
 		comboInteraction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboInteraction = (JComboBox<String>) e.getSource();
@@ -411,7 +411,7 @@ public class EMR_Nurse extends JFrame {
 		comboInteraction.setModel(new DefaultComboBoxModel(new String[] {"Yes", "No"}));
 		comboInteraction.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboSource = new JComboBox();
+		final JComboBox comboSource = new JComboBox();
 		comboSource.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboSource = (JComboBox<String>) e.getSource();
@@ -595,7 +595,7 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblRhythm = new JLabel("Rhythm:");
 		lblRhythm.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboRythm = new JComboBox();
+		final JComboBox comboRythm = new JComboBox();
 		comboRythm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboRythm = (JComboBox<String>) e.getSource();
@@ -636,7 +636,7 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblLocation_1 = new JLabel("Location:");
 		lblLocation_1.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBPLocation = new JComboBox();
+		final JComboBox comboBPLocation = new JComboBox();
 		comboBPLocation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboBPLocation = (JComboBox<String>) e.getSource();
@@ -646,7 +646,7 @@ public class EMR_Nurse extends JFrame {
 		comboBPLocation.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		comboBPLocation.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Left Arm", "Right Arm"}));
 		
-		JComboBox comboPLocation = new JComboBox();
+		final JComboBox comboPLocation = new JComboBox();
 		comboPLocation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboPLocation = (JComboBox<String>) e.getSource();
@@ -656,7 +656,7 @@ public class EMR_Nurse extends JFrame {
 		comboPLocation.setModel(new DefaultComboBoxModel(new String[] {"-choose", "Radial", "Carotid", "Femoral", "Pedal", "Brachial", "Apical"}));
 		comboPLocation.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBPPosition = new JComboBox();
+		final JComboBox comboBPPosition = new JComboBox();
 		comboBPPosition.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboBPPostion = (JComboBox<String>) e.getSource();
@@ -676,9 +676,9 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblUnitType = new JLabel("Unit Type:");
 		lblUnitType.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JRadioButton rdbtnUsStandard = new JRadioButton("U.S. Standard");
+		final JRadioButton rdbtnUsStandard = new JRadioButton("U.S. Standard");
 		
-		JRadioButton rdbtnMetric = new JRadioButton("Metric");
+		final JRadioButton rdbtnMetric = new JRadioButton("Metric");
 		
 		JLabel lblTemperature = new JLabel("Temperature:");
 		lblTemperature.setFont(new Font("Tahoma", Font.PLAIN, 17));
@@ -692,7 +692,7 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblLocation_2 = new JLabel("Location:");
 		lblLocation_2.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboTempLocation = new JComboBox();
+		final JComboBox comboTempLocation = new JComboBox();
 		comboTempLocation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> comboTempLocation = (JComboBox<String>) e.getSource();
@@ -947,7 +947,7 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblReasonForPatient = new JLabel("Reason for Patient Visit:");
 		lblReasonForPatient.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JTextPane textPane_Reason = new JTextPane();
+		final JTextPane textPane_Reason = new JTextPane();
 		textPane_Reason.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
 		JButton btnUpdate_1 = new JButton("Update");
@@ -1028,13 +1028,13 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblPatientQuestions = new JLabel("Patient Questions:");
 		lblPatientQuestions.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JTextPane textPane_Questions = new JTextPane();
+		final JTextPane textPane_Questions = new JTextPane();
 		textPane_Questions.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
 		JLabel lblPatientConcerns = new JLabel("Patient Concerns:");
 		lblPatientConcerns.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JTextPane textPane_Concerns = new JTextPane();
+		final JTextPane textPane_Concerns = new JTextPane();
 		textPane_Concerns.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
 		JButton btnUpdate_2 = new JButton("Update");
@@ -1129,7 +1129,7 @@ public class EMR_Nurse extends JFrame {
 		JLabel lblPleaseSelectThe = new JLabel("Please select the education information needed for the patient:");
 		lblPleaseSelectThe.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JComboBox comboBox_9 = new JComboBox();
+		final JComboBox comboBox_9 = new JComboBox();
 		comboBox_9.setModel(new DefaultComboBoxModel(new String[] {"-choose", "-A-", "Acute Bronchitis", "After Surgery Care", "Alcoholism/Substance Abuse", "Allergies", "Alzheimers Disease", "Anal Disorders", "Anemia", "Angina", "Angioplasty", "Animal Bites", "Ankle Injuries", "Appendicitis", "Arm Injuries", "Arrhytmia", "Arthritis", "Asthma", "Atrial Fibrillation", "-B-", "Back Injuries", "Bacterial Infections", "Bile Duct Disease", "Biodefense", "Biopsy", "Bladder Diseases", "Body Weight", "Bone Cancer", "Bone Marrow Diseases", "Brain Diseases", "Breast Cancer", "Breathing Problems", "Burns", "-C-", "Cancer", "Cancer Chemotherapy", "Cancer-Living With", "Cataract", "Cervical Cancer", "Cesarean Section", "Child Abuse", "Cholesterol", "Chronic Kidney Disease", "Colonoscopy", "Colorectal Cancer", "Concussion", "Constipation", "COPD", "Coronary Artery Bypass", "Chron's Disease", "CT Scans", "-D-", "Deep Vein Thrombosis", "Dementia", "Depression", "Diabetes", "Diarrhea", "Digestive Diseases", "Dislocations", "Diverticulitis", "Drug Reactions", "-E-", "Ear Infections", "Edema", "Esophagus Disorders", "Excercise", "Eye Diseases", "Eye Injuries", "-F-", "Facial Injuries", "Falls", "Fatigue", "Fever", "First Aid", "Flu", "Flu Shot", "Fractures", "-G-", "Gallstones", "Gastrointestinal Bleeding", "Germs", "Glaucoma", "-H-", "Headache", "Health Screening", "Healthy Sleep", "Hearing Disorders", "Heart Attack", "Heart Disease", "Heart Failure", "Hepatitis", "Hep A", "Hep B", "High Blood Pressure", "Hip Injuries", "Hip Replacement", "HPV", "Hyperglycemia", "Hypoglycemia", "Hysterectomy", "-I-", "Immunizations", "Insect Bites", "Irritable Bowel Syndrome", "-J-", "Joint Disorders", "-K-", "Kidney Diseases", "Kidney Failure", "Kidney Stones", "Knee Replacement", "-L-", "Lab Tests", "Leg Injuries", "Lung Cancer", "Lung Diseases", "-M-", "Mammography", "Measles", "Medical Device Safety", "Melanoma", "Meningitis", "Meningococcal Infections", "Menopause", "Mental Disorders", "Mental Health", "MRI Scans", "MRSA", "-N-", "Nausea", "Neurologic Diseases", "Neuromuscular Disorders", "Nuclear Scans", "Nutrition", "-O-", "Osteoporosis", "-P-", "Pacemakers", "Pain", "Pain Relievers", "Parasitic Diseases", "Parathyroid Disorders", "Parkinson's Disease", "Peripheral Arterial Disease", "Pnemonia", "Polio", "Pregnancy", "Prenatal Care", "Prostate Cancer", "-Q-", "Quitting Smoking", "-R-", "Radiation Emergencies", "Radiation Therapy", "Rotavirus Infections", "-S-", "Seizures", "Sexually Transmitted Diseases", "Shingles", "Skin Cancer", "Skin Infections", "Sleep Apnea", "Sore Throat", "Spinal Cord Diseases", "Strep Infections", "Stress", "Stroke", "Suicide", "Surgery", "Swallowing Disorders", "-T-", "Testicular Cancer", "Thyroid Cancer", "Thyroid Tests", "Tick Bites", "Tooth Disorders", "Tuberculosis", "-U-", "Ulcerative Colitis", "Ultrasound", "Urinary Tract Infection", "-V-", "Vaginal Diseases", "-W-", "Wounds", "-X-", "X-rays"}));
 		comboBox_9.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
